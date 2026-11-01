@@ -1,0 +1,7 @@
+# Caddy reverse proxy for the Touchless relay (used by docker-compose.tls.yml).
+# RELAY_DOMAIN and ACME_EMAIL come from .env. WebSocket upgrades on /device/ws work automatically.
+
+{$RELAY_DOMAIN} {
+	tls {$ACME_EMAIL}
+	reverse_proxy relay:8787
+}

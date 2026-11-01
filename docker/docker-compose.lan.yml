@@ -1,0 +1,13 @@
+# Phone on the same Wi-Fi / LAN (no domain, no certificate).
+# Adds a second port binding ONLY on your computer's private Wi-Fi IP (RELAY_LAN_IP in .env).
+# The wizard (start.cmd / start.sh) finds that IP for you.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.lan.yml up -d
+#
+# Never port-forward 8787 on your router. LAN HTTP is unencrypted: trusted home network only.
+services:
+  relay:
+    environment:
+      RELAY_LAN_IP: "${RELAY_LAN_IP:?Set RELAY_LAN_IP in .env to this computer's private Wi-Fi IPv4 (start.cmd / start.sh does it)}"
+    ports:
+      - "${RELAY_LAN_IP:?Set RELAY_LAN_IP in .env}:${RELAY_PORT:-8787}:8787"

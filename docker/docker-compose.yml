@@ -1,0 +1,52 @@
+# Touchless self-hosted relay - ready-made bundle (no source code, no build).
+#
+# Easiest: double-click start.cmd (Windows) or run ./start.sh (Linux/macOS).
+# The wizard downloads the relay image, writes .env and starts this file.
+#
+# Manual:  docker compose up -d            (this computer only, 127.0.0.1)
+#          docker compose -f docker-compose.yml -f docker-compose.lan.yml up -d   (phone on your Wi-Fi)
+#
+# The image "touchless-relay:latest" comes from touchless-relay-image.tar.gz on the
+# releases page (docker load -i touchless-relay-image.tar.gz). See README.md.
+
+services:
+  relay:
+    image: ${TOUCHLESS_IMAGE:-touchless-relay:latest}
+    pull_policy: never               # the image is loaded from the release file, not a registry
+    container_name: touchless-relay
+    restart: unless-stopped
+    environment:
+      PORT: "8787"
+      BIND_ADDR: "0.0.0.0"           # inside the container; the port mapping below scopes exposure
+      DATA_DIR: "/data"
+      TRUST_PROXY: "${TRUST_PROXY:-0}" # 1 ONLY behind a trusted reverse proxy (TLS overlay sets it)
+      HOST_PORT: "${RELAY_PORT:-8787}"
+      # Optional public HTTPS address (https://relay.example.com). Empty = local only.
+      RELAY_PUBLIC_URL: "${RELAY_PUBLIC_URL:-}"
+    ports:
+      # This computer only. The LAN overlay adds your Wi-Fi IP; never use 0.0.0.0 casually.
+      - "127.0.0.1:${RELAY_PORT:-8787}:8787"
+    volumes:
+      - relay-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8787/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+volumes:
+  relay-data:

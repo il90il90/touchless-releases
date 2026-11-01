@@ -1,0 +1,16 @@
+# OPTIONAL: LM Studio (or another MCP app) on THIS computer without a token.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.lan.yml -f docker-compose.local-mcp.yml up -d
+#
+# LM Studio then uses http://127.0.0.1:8788/mcp with no Authorization header.
+# SECURITY: any program on this computer can control the paired phone through it.
+# The port stays on 127.0.0.1 - never publish, forward or tunnel 8788.
+# Works only while exactly ONE phone is connected to this relay.
+services:
+  relay:
+    environment:
+      LOCAL_MCP_NO_AUTH: "1"
+      LOCAL_MCP_PORT: "8788"
+      HOST_LOCAL_MCP_PORT: "8788"
+    ports:
+      - "127.0.0.1:8788:8788"
