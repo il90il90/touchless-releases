@@ -1,7 +1,5 @@
 # Touchless — run your own relay with Docker (self-hosted)
 
-**עברית: [README.he.md](README.he.md)**
-
 Touchless normally connects your phone and your AI through the Touchless cloud relay. With this
 folder you run that relay **on your own computer** instead, so phone commands never leave your home
 network, and you can use a **local AI in LM Studio** with no cloud account at all.
