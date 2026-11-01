@@ -185,6 +185,7 @@ try {
         if ((Invoke-Docker ($compose + @("up", "-d", "--remove-orphans"))) -ne 0) { throw "docker compose up failed (see the message above)." }
 
         $hostPort = [int](Get-EnvValue "RELAY_PORT" "8787")
+        $adminPort = [int](Get-EnvValue "ADMIN_PORT" "8789")
         $healthy = $false
         for ($i = 0; $i -lt 15; $i++) {
             $r = & curl.exe -s --noproxy "*" --max-time 3 "http://127.0.0.1:$hostPort/healthz" 2>$null
@@ -222,8 +223,11 @@ try {
             Write-Host "2) Localhost test only. For the phone run:  start.cmd lan"
             if ($noToken) { Write-Host "   LM Studio: http://127.0.0.1:8788/mcp (no token) once a phone is connected." }
         }
+        Write-Host ""
+        Write-Host "Setup page with buttons and settings (this computer): http://127.0.0.1:$adminPort/" -ForegroundColor Green
         Write-Host "Stop: stop.cmd    Update: start.cmd update    Logs: docker compose logs -f relay"
         Write-Host "=========================================================" -ForegroundColor Cyan
+        if ($healthy -and -not $env:TOUCHLESS_NO_BROWSER) { Start-Process "http://127.0.0.1:$adminPort/" }
     } finally { Pop-Location }
 } catch {
     Write-Host ""

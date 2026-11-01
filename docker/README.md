@@ -44,8 +44,12 @@ The wizard asks two questions:
 2. **Enable LM Studio without token?** Answer **y** only if LM Studio runs on **this** computer and
    it is your personal, trusted computer (see [Security](#security)). Otherwise press Enter.
 
-At the end it prints a box called **WHAT TO DO NOW** with the exact addresses for your network.
-Keep that window open while you do steps 3–5.
+At the end your browser opens the **setup page** at **http://127.0.0.1:8789**. It walks you through
+the next steps with your exact address, **Copy** buttons, a live **phone connected** light and the
+**Relay settings**. The same steps are also printed in the window (**WHAT TO DO NOW**).
+
+> You can open the setup page any time: on this computer at `http://127.0.0.1:8789` (with settings), or
+> on the phone at the relay address, e.g. `http://192.168.1.50:8787` (steps only; settings can't be changed from other devices).
 
 > Windows may ask whether Docker may use the network. Allow it for **Private networks** only.
 
@@ -80,7 +84,7 @@ Touchless reconnects to your computer. **AI agent** must stay **On** on the Touc
    (Touchless has many tools).
 2. Open **Program → Install → Edit mcp.json** and add a `touchless` entry. Keep any other servers you already have.
 
-**If you answered "y" to "LM Studio without token":**
+**LM Studio without a token** (switch it on in **Relay settings** on the setup page, or answer "y" in the wizard):
 
 ```json
 {
@@ -127,11 +131,12 @@ do not need in the integration's tool list.
 | Start again (after a reboot it starts by itself) | `start.cmd` | `./start.sh` |
 | Stop | `stop.cmd` | `./stop.sh` |
 | Update to the newest relay | `start.cmd update` | `./start.sh update` |
+| Change settings (LM Studio without a token, public address) | open `http://127.0.0.1:8789` | same |
 | See the log | `docker compose logs -f relay` | same |
 | Go back to the Touchless cloud | Touchless → Settings → Advanced → Relay server → **Touchless cloud (Default)** | same |
 
-Your settings live in `.env` and the relay's small state in the Docker volume `relay-data`. Stopping and
-updating keep both. `docker compose down -v` **deletes** the volume; you rarely want that.
+Port settings live in `.env`. Settings you change on the setup page, and the relay's small state, live in
+the Docker volume `relay-data` (`settings.json`, `state.json`). Stopping, restarting and updating keep all of them. `docker compose down -v` **deletes** the volume; you rarely want that.
 
 ### Manual commands (instead of the wizard)
 
@@ -149,9 +154,9 @@ docker compose -f docker-compose.yml -f docker-compose.lan.yml up -d
 | `start.cmd` / `start.ps1` | Windows wizard: download + verify image, write `.env`, start, print the addresses. |
 | `start.sh` | The same wizard for macOS / Linux. |
 | `stop.cmd` / `stop.sh` | Stop the relay (data is kept). |
-| `docker-compose.yml` | The relay itself, reachable only from this computer (`127.0.0.1:8787`). |
+| `docker-compose.yml` | The relay itself on this computer only: `127.0.0.1:8787` (relay), `:8789` (setup page + settings), `:8788` (LM Studio without a token, off until you switch it on). |
 | `docker-compose.lan.yml` | Adds your Wi-Fi IP so the phone can connect. |
-| `docker-compose.local-mcp.yml` | Optional: LM Studio on this computer without a token (`127.0.0.1:8788`). |
+| `docker-compose.local-mcp.yml` | Optional: starts with "LM Studio without a token" switched on (you can still turn it off in the settings). |
 | `docker-compose.tls.yml` + `Caddyfile` | Optional: public HTTPS with your own domain (for ChatGPT / Claude on the web). |
 | `.env.example` | All settings, explained. The wizard copies it to `.env`. |
 
@@ -201,7 +206,9 @@ Work through these in order:
 - Home-network `http://` is not encrypted. Use it only on your own trusted Wi-Fi; for anything else use HTTPS.
 - AI clients sign in with a phone-approved sign-in or an API key you create in Touchless and can revoke.
   The relay stores only hashes and never prints tokens or keys.
-- **LM Studio without token** (`127.0.0.1:8788`) lets **any program on this computer** control the paired phone.
+- The setup page's **settings** (`127.0.0.1:8789`) and **LM Studio without a token** (`127.0.0.1:8788`) answer only on
+  this computer, never on your Wi-Fi.
+- **LM Studio without a token** lets **any program on this computer** control the paired phone.
   Enable it only on a personal computer you trust, and never expose that port.
 - Touchless's own safety settings (approval mode, protected screens, IP access, active hours) apply the same way
   on your relay as on the cloud.

@@ -181,5 +181,13 @@ else
   echo "2) Localhost test only. For the phone run:  ./start.sh lan"
   [[ $no_token -eq 1 ]] && echo "   LM Studio: http://127.0.0.1:8788/mcp (no token) once a phone is connected."
 fi
+admin_port="$(get_env ADMIN_PORT 8789)"
+echo
+echo "Setup page with buttons and settings (this computer): http://127.0.0.1:$admin_port/"
 echo "Stop: ./stop.sh    Update: ./start.sh update    Logs: docker compose logs -f relay"
 echo "========================================================="
+if [[ $healthy -eq 1 && -z "${TOUCHLESS_NO_BROWSER:-}" ]]; then
+  if command -v open >/dev/null 2>&1 && [[ "$(uname)" == "Darwin" ]]; then open "http://127.0.0.1:$admin_port/" >/dev/null 2>&1 || true
+  elif command -v xdg-open >/dev/null 2>&1 && [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]]; then xdg-open "http://127.0.0.1:$admin_port/" >/dev/null 2>&1 || true
+  fi
+fi

@@ -23,9 +23,20 @@ services:
       HOST_PORT: "${RELAY_PORT:-8787}"
       # Optional public HTTPS address (https://relay.example.com). Empty = local only.
       RELAY_PUBLIC_URL: "${RELAY_PUBLIC_URL:-}"
+      # Local-only listeners, published on 127.0.0.1 below (never on the LAN):
+      #  8789 = setup page + settings (http://127.0.0.1:8789), 8788 = LM Studio without a token
+      #  (off until switched on there, or by docker-compose.local-mcp.yml). Settings are saved
+      #  in the relay-data volume, so updates keep them.
+      LOCAL_BIND: "0.0.0.0"
+      LOCAL_MCP_PORT: "8788"
+      HOST_LOCAL_MCP_PORT: "8788"
+      ADMIN_PORT: "8789"
+      HOST_ADMIN_PORT: "${ADMIN_PORT:-8789}"
     ports:
       # This computer only. The LAN overlay adds your Wi-Fi IP; never use 0.0.0.0 casually.
       - "127.0.0.1:${RELAY_PORT:-8787}:8787"
+      - "127.0.0.1:8788:8788"                # LM Studio without a token (this computer only)
+      - "127.0.0.1:${ADMIN_PORT:-8789}:8789" # setup page + settings (this computer only)
     volumes:
       - relay-data:/data
     healthcheck:

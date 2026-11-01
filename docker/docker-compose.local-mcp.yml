@@ -9,8 +9,4 @@
 services:
   relay:
     environment:
-      LOCAL_MCP_NO_AUTH: "1"
-      LOCAL_MCP_PORT: "8788"
-      HOST_LOCAL_MCP_PORT: "8788"
-    ports:
-      - "127.0.0.1:8788:8788"
+      LOCAL_MCP_NO_AUTH: "1" # default ON; the settings page (127.0.0.1:8789) can still turn it off
